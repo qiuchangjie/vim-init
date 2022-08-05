@@ -99,7 +99,7 @@ endif
 set showmatch
 
 " 显示括号匹配的时间
-set matchtime=2
+set matchtime=5
 
 " 显示最后一行
 set display=lastline
@@ -113,8 +113,9 @@ set lazyredraw
 " 错误格式
 set errorformat+=[%f:%l]\ ->\ %m,[%f:%l]:%m
 
-" 设置分隔符可视
-set listchars=tab:\|\ ,trail:.,extends:>,precedes:<
+" 设置显示制表符等隐藏字符
+set list
+set listchars=tab:→\ ,trail:·,precedes:«,extends:»
 
 
 " 设置 tags：当前文件所在目录往上向根目录搜索直到碰到 .tags 文件

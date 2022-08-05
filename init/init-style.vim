@@ -18,15 +18,14 @@ set laststatus=2
 
 " 总是显示行号
 set number
+" 显示相对行号
+set relativenumber
 
 " 总是显示侧边栏（用于显示 mark/gitdiff/诊断信息）
 set signcolumn=yes
 
 " 总是显示标签栏
-set showtabline=2
-
-" 设置显示制表符等隐藏字符
-set list
+"  set showtabline=2
 
 " 右下角显示命令
 set showcmd
@@ -76,11 +75,20 @@ hi! clear SpellBad
 hi! clear SpellCap
 hi! clear SpellRare
 hi! clear SpellLocal
+
 if has('gui_running')
 	hi! SpellBad gui=undercurl guisp=red
 	hi! SpellCap gui=undercurl guisp=blue
 	hi! SpellRare gui=undercurl guisp=magenta
 	hi! SpellRare gui=undercurl guisp=cyan
+
+    au GUIEnter * simalt ~x " 窗口启动时自动最大化
+    set guioptions-=m " 隐藏菜单栏
+    set guioptions-=T " 隐藏工具栏
+    set guioptions-=L " 隐藏左侧滚动条
+    set guioptions-=r " 隐藏右侧滚动条
+    set guioptions-=b " 隐藏底部滚动条
+    set showtabline=0 " 隐藏Tab栏
 else
 	hi! SpellBad term=standout ctermfg=1 term=underline cterm=underline
 	hi! SpellCap term=underline cterm=underline
@@ -287,5 +295,13 @@ set tabline=%!Vim_NeatTabLine()
 set guitablabel=%{Vim_NeatGuiTabLabel()}
 set guitabtooltip=%{Vim_NeatGuiTabTip()}
 
+"语言设置
+set helplang=cn
 
+set guifont=Hack_Nerd_Font_Mono:h12
 
+colorscheme doom-one
+
+set cursorline              " 突出显示当前行
+set cul "高亮光标所在行
+set cuc "高亮光标所在列

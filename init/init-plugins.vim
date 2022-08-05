@@ -15,7 +15,7 @@
 "----------------------------------------------------------------------
 if !exists('g:bundle_group')
 	let g:bundle_group = ['basic', 'tags', 'enhanced', 'filetypes', 'textobj']
-	let g:bundle_group += ['tags', 'airline', 'nerdtree', 'ale', 'echodoc']
+	let g:bundle_group += ['tags', 'airline', 'nerdtree', 'ale', 'echodoc', 'coc']
 	let g:bundle_group += ['leaderf']
 endif
 
@@ -96,6 +96,9 @@ if index(g:bundle_group, 'basic') >= 0
 
 	" 一次性安装一大堆 colorscheme
 	Plug 'flazz/vim-colorschemes'
+    
+    " doom-one主题
+    Plug 'romgrk/doom-one.vim'
 
 	" 支持库，给其他插件用的函数库
 	Plug 'xolox/vim-misc'
@@ -123,7 +126,7 @@ if index(g:bundle_group, 'basic') >= 0
 	nmap <m-e> <Plug>(choosewin)
 
 	" 默认不显示 startify
-	let g:startify_disable_at_vimenter = 1
+	"  let g:startify_disable_at_vimenter = 1
 	let g:startify_session_dir = '~/.vim/session'
 
 	" 使用 <space>ha 清除 errormarker 标注的错误
@@ -290,7 +293,7 @@ if index(g:bundle_group, 'airline') >= 0
 	let g:airline_left_alt_sep = ''
 	let g:airline_right_sep = ''
 	let g:airline_right_alt_sep = ''
-	let g:airline_powerline_fonts = 0
+	let g:airline_powerline_fonts = 1
 	let g:airline_exclude_preview = 1
 	let g:airline_section_b = '%n'
 	let g:airline_theme='deus'
@@ -299,6 +302,7 @@ if index(g:bundle_group, 'airline') >= 0
 	let g:airline#extensions#fugitiveline#enabled = 0
 	let g:airline#extensions#csv#enabled = 0
 	let g:airline#extensions#vimagit#enabled = 0
+    let g:airline#extensions#tabline#enabled = 1
 endif
 
 
@@ -411,35 +415,243 @@ if index(g:bundle_group, 'echodoc') >= 0
 	let g:echodoc#enable_at_startup = 1
 endif
 
+if index(g:bundle_group, 'coc') >= 0
+    Plug 'neoclide/coc.nvim', {'branch':'release'}
+    let g:coc_global_extensions=[
+                \'coc-omnisharp',
+                \'coc-html',
+                \'coc-eslint',
+                \'coc-snippets',
+                \'coc-emmet',
+                \'coc-clangd',
+                \'coc-java',
+                \'coc-lua',
+                \'coc-pairs',
+                \'coc-json',
+                \'coc-lists',
+                \'coc-highlight',
+                \'coc-css',
+                \'coc-git',
+                \'coc-phpls',
+                \'coc-prettier',
+                \'coc-wxml',
+                \'coc-tsserver',
+                \'coc-vetur',
+                \'coc-stylelint',
+                \'coc-word',
+                \'coc-python',
+                \'coc-vimlsp',
+                \'coc-tabnine',
+                \'coc-emoji',
+                \'coc-marketplace'
+                \]
+
+    "------------------------------coc.nvim---------------------------------------
+    filetype on
+
+    autocmd CursorHold * silent call CocActionAsync('highlight')
+
+    " Some servers have issues with backup files, see #649.
+    set nobackup
+    set nowritebackup
+
+    " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
+    " delays and poor user experience.
+    set updatetime=300
+
+    " Always show the signcolumn, otherwise it would shift the text each time
+    " diagnostics appear/become resolved.
+    set signcolumn=yes
+
+    " Use tab for trigger completion with characters ahead and navigate.
+    " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+    " other plugin before putting this into your config.
+    inoremap <silent><expr> <TAB>
+        \ coc#pum#visible() ? coc#pum#next(1):
+        \ CheckBackspace() ? "\<Tab>" :
+        \ coc#refresh()
+    inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+    " Make <CR> to accept selected completion item or notify coc.nvim to format
+    " <C-g>u breaks current undo, please make your own choice.
+    inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                                \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+    function! CheckBackspace() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+    endfunction
+
+    " Use <c-space> to trigger completion.
+    if has('nvim')
+    inoremap <silent><expr> <c-space> coc#refresh()
+    else
+    inoremap <silent><expr> <c-@> coc#refresh()
+    endif
+
+    " Use `[g` and `]g` to navigate diagnostics
+    " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+    nmap <silent> [g <Plug>(coc-diagnostic-prev)
+    nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+    " GoTo code navigation.
+    nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gy <Plug>(coc-type-definition)
+    nmap <silent> gi <Plug>(coc-implementation)
+    nmap <silent> gr <Plug>(coc-references)
+
+    " Use K to show documentation in preview window.
+    nnoremap <silent> K :call ShowDocumentation()<CR>
+
+    function! ShowDocumentation()
+    if CocAction('hasProvider', 'hover')
+        call CocActionAsync('doHover')
+    else
+        call feedkeys('K', 'in')
+    endif
+    endfunction
+
+    " Highlight the symbol and its references when holding the cursor.
+    autocmd CursorHold * silent call CocActionAsync('highlight')
+
+    " Symbol renaming.
+    nmap <leader>rn <Plug>(coc-rename)
+
+    " Formatting selected code.
+    xmap <leader>f  <Plug>(coc-format-selected)
+    nmap <leader>f  <Plug>(coc-format-selected)
+
+    augroup mygroup
+    autocmd!
+    " Setup formatexpr specified filetype(s).
+    autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+    " Update signature help on jump placeholder.
+    autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+    augroup end
+
+    " Applying codeAction to the selected region.
+    " Example: `<leader>aap` for current paragraph
+    xmap <leader>a  <Plug>(coc-codeaction-selected)
+    nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+    " Remap keys for applying codeAction to the current buffer.
+    nmap <leader>ac  <Plug>(coc-codeaction)
+    " Apply AutoFix to problem on the current line.
+    nmap <leader>qf  <Plug>(coc-fix-current)
+
+    " Run the Code Lens action on the current line.
+    nmap <leader>cl  <Plug>(coc-codelens-action)
+
+    " Map function and class text objects
+    " NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+    xmap if <Plug>(coc-funcobj-i)
+    omap if <Plug>(coc-funcobj-i)
+    xmap af <Plug>(coc-funcobj-a)
+    omap af <Plug>(coc-funcobj-a)
+    xmap ic <Plug>(coc-classobj-i)
+    omap ic <Plug>(coc-classobj-i)
+    xmap ac <Plug>(coc-classobj-a)
+    omap ac <Plug>(coc-classobj-a)
+
+    " Remap <C-f> and <C-b> for scroll float windows/popups.
+    if has('nvim-0.4.0') || has('patch-8.2.0750')
+    nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+    inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+    vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    endif
+
+    " Use CTRL-S for selections ranges.
+    " Requires 'textDocument/selectionRange' support of language server.
+    nmap <silent> <C-s> <Plug>(coc-range-select)
+    xmap <silent> <C-s> <Plug>(coc-range-select)
+
+    " Add `:Format` command to format current buffer.
+    command! -nargs=0 Format :call CocActionAsync('format')
+
+    " Add `:Fold` command to fold current buffer.
+    command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+    " Add `:OR` command for organize imports of the current buffer.
+    command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+
+    " Add (Neo)Vim's native statusline support.
+    " NOTE: Please see `:h coc-status` for integrations with external plugins that
+    " provide custom statusline: lightline.vim, vim-airline.
+    set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+    " Mappings for CoCList
+    " Show all diagnostics.
+    nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+    " Manage extensions.
+    nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+    " Show commands.
+    nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
+    " Find symbol of current document.
+    nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+    " Search workspace symbols.
+    nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
+    " Do default action for next item.
+    nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+    " Do default action for previous item.
+    nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+    " Resume latest coc list.
+    nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+
+    "------------------------------coc.nvim---------------------------------------------
+endif
+
 
 "----------------------------------------------------------------------
 " LeaderF：CtrlP / FZF 的超级代替者，文件模糊匹配，tags/函数名 选择
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'leaderf') >= 0
-	" 如果 vim 支持 python 则启用  Leaderf
+	" 如果 vim 支持 python 则启用  Leaderf （只要设置好变量 &pythonthreedll 就可以）
 	if has('python') || has('python3')
 		Plug 'Yggdroot/LeaderF'
 
-		" CTRL+p 打开文件模糊匹配
-		let g:Lf_ShortcutF = '<c-p>'
+		"  " CTRL+p 打开文件模糊匹配
+		"  let g:Lf_ShortcutF = '<c-p>'
 
-		" ALT+n 打开 buffer 模糊匹配
-		let g:Lf_ShortcutB = '<m-n>'
+		"  " ALT+n 打开 buffer 模糊匹配
+		"  let g:Lf_ShortcutB = '<m-n>'
 
-		" CTRL+n 打开最近使用的文件 MRU，进行模糊匹配
-		noremap <c-n> :LeaderfMru<cr>
+		"  " CTRL+n 打开最近使用的文件 MRU，进行模糊匹配
+		"  noremap <c-n> :LeaderfMru<cr>
 
-		" ALT+p 打开函数列表，按 i 进入模糊匹配，ESC 退出
-		noremap <m-p> :LeaderfFunction!<cr>
+		"  " ALT+p 打开函数列表，按 i 进入模糊匹配，ESC 退出
+		"  noremap <m-p> :LeaderfFunction!<cr>
 
-		" ALT+SHIFT+p 打开 tag 列表，i 进入模糊匹配，ESC退出
-		noremap <m-P> :LeaderfBufTag!<cr>
+		"  " ALT+SHIFT+p 打开 tag 列表，i 进入模糊匹配，ESC退出
+		"  noremap <m-P> :LeaderfBufTag!<cr>
 
-		" ALT+n 打开 buffer 列表进行模糊匹配
-		noremap <m-n> :LeaderfBuffer<cr>
+		"  " ALT+n 打开 buffer 列表进行模糊匹配
+		"  noremap <m-n> :LeaderfBuffer<cr>
 
-		" ALT+m 全局 tags 模糊匹配
-		noremap <m-m> :LeaderfTag<cr>
+		"  "  " ALT+m 全局 tags 模糊匹配
+		"  noremap <m-m> :LeaderfTag<cr>
+
+        "------------------------------LeaderF---------------------------------------------
+        let g:Lf_PreviewInPopup = 1
+        let g:Lf_PreviewHorizontalPosition = 'right'
+        let g:Lf_UseCache = 0
+        let g:Lf_WildIgnore = {
+                \ 'dir': ['.svn','.git','.hg'],
+                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.meta']
+                \}
+        nmap <C-S> :Leaderf rg<CR>
+        nmap <C-P> :Leaderf file<CR>
+        nmap <C-F> :Leaderf function<CR>
+        nmap <C-B> :Leaderf buffer<CR>
+        imap <C-S> <Esc>:Leaderf rg<CR>
+        imap <C-P> <Esc>:Leaderf file<CR>
+        imap <C-F> <Esc>:Leaderf function<CR>
+        imap <C-B> <Esc>:Leaderf buffer<CR>
+        "------------------------------LeaderF---------------------------------------------
+
+
 
 		" 最大历史文件保存 2048 个
 		let g:Lf_MruMaxFiles = 2048
@@ -523,89 +735,90 @@ endif
 "----------------------------------------------------------------------
 call plug#end()
 
+"代码补全
+set completeopt=longest,menu,menuone,noselect
 
 
-"----------------------------------------------------------------------
-" YouCompleteMe 默认设置：YCM 需要你另外手动编译安装
-"----------------------------------------------------------------------
+"  "----------------------------------------------------------------------
+"  " YouCompleteMe 默认设置：YCM 需要你另外手动编译安装
+"  "----------------------------------------------------------------------
 
-" 禁用预览功能：扰乱视听
-let g:ycm_add_preview_to_completeopt = 0
+"  " 禁用预览功能：扰乱视听
+"  let g:ycm_add_preview_to_completeopt = 0
 
-" 禁用诊断功能：我们用前面更好用的 ALE 代替
-let g:ycm_show_diagnostics_ui = 0
-let g:ycm_server_log_level = 'info'
-let g:ycm_min_num_identifier_candidate_chars = 2
-let g:ycm_collect_identifiers_from_comments_and_strings = 1
-let g:ycm_complete_in_strings=1
-let g:ycm_key_invoke_completion = '<c-z>'
-set completeopt=menu,menuone,noselect
+"  " 禁用诊断功能：我们用前面更好用的 ALE 代替
+"  let g:ycm_show_diagnostics_ui = 0
+"  let g:ycm_server_log_level = 'info'
+"  let g:ycm_min_num_identifier_candidate_chars = 2
+"  let g:ycm_collect_identifiers_from_comments_and_strings = 1
+"  let g:ycm_complete_in_strings=1
+"  let g:ycm_key_invoke_completion = '<c-z>'
 
-" noremap <c-z> <NOP>
+"  " noremap <c-z> <NOP>
 
-" 两个字符自动触发语义补全
-let g:ycm_semantic_triggers =  {
-			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
-			\ 'cs,lua,javascript': ['re!\w{2}'],
-			\ }
+"  " 两个字符自动触发语义补全
+"  let g:ycm_semantic_triggers =  {
+"  			\ 'c,cpp,python,java,go,erlang,perl': ['re!\w{2}'],
+"  			\ 'cs,lua,javascript': ['re!\w{2}'],
+"  			\ }
 
 
-"----------------------------------------------------------------------
-" Ycm 白名单（非名单内文件不启用 YCM），避免打开个 1MB 的 txt 分析半天
-"----------------------------------------------------------------------
-let g:ycm_filetype_whitelist = { 
-			\ "c":1,
-			\ "cpp":1, 
-			\ "objc":1,
-			\ "objcpp":1,
-			\ "python":1,
-			\ "java":1,
-			\ "javascript":1,
-			\ "coffee":1,
-			\ "vim":1, 
-			\ "go":1,
-			\ "cs":1,
-			\ "lua":1,
-			\ "perl":1,
-			\ "perl6":1,
-			\ "php":1,
-			\ "ruby":1,
-			\ "rust":1,
-			\ "erlang":1,
-			\ "asm":1,
-			\ "nasm":1,
-			\ "masm":1,
-			\ "tasm":1,
-			\ "asm68k":1,
-			\ "asmh8300":1,
-			\ "asciidoc":1,
-			\ "basic":1,
-			\ "vb":1,
-			\ "make":1,
-			\ "cmake":1,
-			\ "html":1,
-			\ "css":1,
-			\ "less":1,
-			\ "json":1,
-			\ "cson":1,
-			\ "typedscript":1,
-			\ "haskell":1,
-			\ "lhaskell":1,
-			\ "lisp":1,
-			\ "scheme":1,
-			\ "sdl":1,
-			\ "sh":1,
-			\ "zsh":1,
-			\ "bash":1,
-			\ "man":1,
-			\ "markdown":1,
-			\ "matlab":1,
-			\ "maxima":1,
-			\ "dosini":1,
-			\ "conf":1,
-			\ "config":1,
-			\ "zimbu":1,
-			\ "ps1":1,
-			\ }
+"  "----------------------------------------------------------------------
+"  " Ycm 白名单（非名单内文件不启用 YCM），避免打开个 1MB 的 txt 分析半天
+"  "----------------------------------------------------------------------
+"  let g:ycm_filetype_whitelist = { 
+"  			\ "c":1,
+"  			\ "cpp":1, 
+"  			\ "objc":1,
+"  			\ "objcpp":1,
+"  			\ "python":1,
+"  			\ "java":1,
+"  			\ "javascript":1,
+"  			\ "coffee":1,
+"  			\ "vim":1, 
+"  			\ "go":1,
+"  			\ "cs":1,
+"  			\ "lua":1,
+"  			\ "perl":1,
+"  			\ "perl6":1,
+"  			\ "php":1,
+"  			\ "ruby":1,
+"  			\ "rust":1,
+"  			\ "erlang":1,
+"  			\ "asm":1,
+"  			\ "nasm":1,
+"  			\ "masm":1,
+"  			\ "tasm":1,
+"  			\ "asm68k":1,
+"  			\ "asmh8300":1,
+"  			\ "asciidoc":1,
+"  			\ "basic":1,
+"  			\ "vb":1,
+"  			\ "make":1,
+"  			\ "cmake":1,
+"  			\ "html":1,
+"  			\ "css":1,
+"  			\ "less":1,
+"  			\ "json":1,
+"  			\ "cson":1,
+"  			\ "typedscript":1,
+"  			\ "haskell":1,
+"  			\ "lhaskell":1,
+"  			\ "lisp":1,
+"  			\ "scheme":1,
+"  			\ "sdl":1,
+"  			\ "sh":1,
+"  			\ "zsh":1,
+"  			\ "bash":1,
+"  			\ "man":1,
+"  			\ "markdown":1,
+"  			\ "matlab":1,
+"  			\ "maxima":1,
+"  			\ "dosini":1,
+"  			\ "conf":1,
+"  			\ "config":1,
+"  			\ "zimbu":1,
+"  			\ "ps1":1,
+"  			\ }
 
 
