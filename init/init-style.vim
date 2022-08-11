@@ -77,12 +77,16 @@ hi! clear SpellRare
 hi! clear SpellLocal
 
 if has('gui_running')
-	hi! SpellBad gui=undercurl guisp=red
-	hi! SpellCap gui=undercurl guisp=blue
-	hi! SpellRare gui=undercurl guisp=magenta
-	hi! SpellRare gui=undercurl guisp=cyan
-
-    au GUIEnter * simalt ~x " 窗口启动时自动最大化
+    hi! SpellBad gui=undercurl guisp=red
+    hi! SpellCap gui=undercurl guisp=blue
+    hi! SpellRare gui=undercurl guisp=magenta
+    hi! SpellRare gui=undercurl guisp=cyan
+    if has('win32')
+        au GUIEnter * simalt ~x " 窗口启动时自动最大化
+    elseif has('unix')
+        au GUIEnter * winpos 0 0
+        set lines=999 columns=999 " 窗口启动时自动最大化
+    endif
     set guioptions-=m " 隐藏菜单栏
     set guioptions-=T " 隐藏工具栏
     set guioptions-=L " 隐藏左侧滚动条
