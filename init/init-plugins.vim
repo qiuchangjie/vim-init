@@ -14,8 +14,8 @@
 " 默认情况下的分组，可以再前面覆盖之
 "----------------------------------------------------------------------
 if !exists('g:bundle_group')
-	let g:bundle_group = ['basic', 'tags', 'enhanced', 'filetypes', 'textobj']
-	let g:bundle_group += ['tags', 'airline', 'nerdtree', 'ale', 'echodoc', 'coc']
+	let g:bundle_group = ['basic', 'enhanced', 'filetypes', 'textobj']
+	let g:bundle_group += ['airline', 'nerdtree', 'ale', 'echodoc', 'coc']
 	let g:bundle_group += ['leaderf']
 endif
 
@@ -198,7 +198,7 @@ if index(g:bundle_group, 'tags') >= 0
 	let g:gutentags_ctags_tagfile = '.tags'
 
 	" 默认生成的数据文件集中到 ~/.cache/tags 避免污染项目目录，好清理
-	let g:gutentags_cache_dir = expand('~/.cache/tags')
+	let g:gutentags_cache_dir = expand(s:home . '/.cache/tags')
 
 	" 默认禁用自动生成
 	let g:gutentags_modules = [] 
@@ -610,48 +610,52 @@ endif
 if index(g:bundle_group, 'leaderf') >= 0
 	" 如果 vim 支持 python 则启用  Leaderf （只要设置好变量 &pythonthreedll 就可以）
 	if has('python') || has('python3')
-		Plug 'Yggdroot/LeaderF'
+		Plug 'Yggdroot/LeaderF',{'do':':LeaderfInstallCExtension'}
 
-		"  " CTRL+p 打开文件模糊匹配
-		"  let g:Lf_ShortcutF = '<c-p>'
+		" CTRL+p 打开文件模糊匹配
+		let g:Lf_ShortcutF = '<c-p>'
 
-		"  " ALT+n 打开 buffer 模糊匹配
-		"  let g:Lf_ShortcutB = '<m-n>'
+		" ALT+n 打开 buffer 模糊匹配
+		let g:Lf_ShortcutB = '<m-n>'
 
-		"  " CTRL+n 打开最近使用的文件 MRU，进行模糊匹配
-		"  noremap <c-n> :LeaderfMru<cr>
+		" CTRL+n 打开最近使用的文件 MRU，进行模糊匹配
+		noremap <c-n> :LeaderfMru<cr>
 
-		"  " ALT+p 打开函数列表，按 i 进入模糊匹配，ESC 退出
-		"  noremap <m-p> :LeaderfFunction!<cr>
+		" ALT+p 打开函数列表，按 i 进入模糊匹配，ESC 退出
+		noremap <m-p> :LeaderfFunction!<cr>
 
-		"  " ALT+SHIFT+p 打开 tag 列表，i 进入模糊匹配，ESC退出
-		"  noremap <m-P> :LeaderfBufTag!<cr>
+		" ALT+SHIFT+p 打开 tag 列表，i 进入模糊匹配，ESC退出
+		noremap <m-P> :LeaderfBufTag!<cr>
 
-		"  " ALT+n 打开 buffer 列表进行模糊匹配
-		"  noremap <m-n> :LeaderfBuffer<cr>
+		" ALT+n 打开 buffer 列表进行模糊匹配
+		noremap <m-n> :LeaderfBuffer<cr>
 
-		"  "  " ALT+m 全局 tags 模糊匹配
+        " ALT+SHIFT+m 搜索当前光标所在的单词
+        noremap <m-M> :<c-u><c-r>=printf("Leaderf! rg -e %s", expand("<cword>"))<cr>
+		"  " ALT+m 全局 tags 模糊匹配
 		"  noremap <m-m> :LeaderfTag<cr>
+        " ALT+m 全局 rg 模糊匹配
+        noremap <m-m> :Leaderf rg<cr>
+        " ALT+SHIFT+n recall rg
+        noremap <m-N> :LeaderfRgRecall<cr>
 
         "------------------------------LeaderF---------------------------------------------
-        let g:Lf_PreviewInPopup = 1
-        let g:Lf_PreviewHorizontalPosition = 'right'
-        let g:Lf_UseCache = 0
-        let g:Lf_WildIgnore = {
-                \ 'dir': ['.svn','.git','.hg'],
-                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]', '*.meta']
-                \}
-        nmap <C-S> :Leaderf rg<CR>
-        nmap <C-P> :Leaderf file<CR>
-        nmap <C-F> :Leaderf function<CR>
-        nmap <C-B> :Leaderf buffer<CR>
-        imap <C-S> <Esc>:Leaderf rg<CR>
-        imap <C-P> <Esc>:Leaderf file<CR>
-        imap <C-F> <Esc>:Leaderf function<CR>
-        imap <C-B> <Esc>:Leaderf buffer<CR>
+        "  let g:Lf_PreviewInPopup = 1
+        "  let g:Lf_PreviewHorizontalPosition = 'right'
+        "  let g:Lf_UseCache = 0
+        "  let g:Lf_WildIgnore = {
+        "          \ 'dir': ['.svn','.git','.hg','Temp'],
+        "          \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj']
+        "          \}
+        "  nmap <C-S> :Leaderf rg<CR>
+        "  nmap <C-P> :Leaderf file<CR>
+        "  nmap <C-F> :Leaderf function<CR>
+        "  nmap <C-B> :Leaderf buffer<CR>
+        "  imap <C-S> <Esc>:Leaderf rg<CR>
+        "  imap <C-P> <Esc>:Leaderf file<CR>
+        "  imap <C-F> <Esc>:Leaderf function<CR>
+        "  imap <C-B> <Esc>:Leaderf buffer<CR>
         "------------------------------LeaderF---------------------------------------------
-
-
 
 		" 最大历史文件保存 2048 个
 		let g:Lf_MruMaxFiles = 2048
@@ -663,7 +667,7 @@ if index(g:bundle_group, 'leaderf') >= 0
 		let g:Lf_RootMarkers = ['.project', '.root', '.svn', '.git']
 		let g:Lf_WorkingDirectoryMode = 'Ac'
 		let g:Lf_WindowHeight = 0.30
-		let g:Lf_CacheDirectory = expand('~/.vim/cache')
+		let g:Lf_CacheDirectory = expand(s:home . '/.cache/Leaderf')
 
 		" 显示绝对路径
 		let g:Lf_ShowRelativePath = 0
@@ -673,12 +677,12 @@ if index(g:bundle_group, 'leaderf') >= 0
 
 		" 模糊匹配忽略扩展名
 		let g:Lf_WildIgnore = {
-					\ 'dir': ['.svn','.git','.hg'],
-					\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+					\ 'dir': ['.svn','.git','.hg','.cache','Temp'],
+					\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj']
 					\ }
 
 		" MRU 文件忽略扩展名
-		let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll']
+		let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll', '*.meta','*.sln*','*.csproj']
 		let g:Lf_StlColorscheme = 'powerline'
 
 		" 禁用 function/buftag 的预览功能，可以手动用 p 预览
