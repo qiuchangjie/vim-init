@@ -647,14 +647,16 @@ if index(g:bundle_group, 'leaderf') >= 0
                 \ 'dir': ['.svn','.git','.hg','Temp'],
                 \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj']
                 \}
-        nmap <C-S> :Leaderf rg<CR>
-        nmap <C-P> :Leaderf file<CR>
-        nmap <C-F> :Leaderf function<CR>
-        nmap <C-B> :Leaderf buffer<CR>
-        imap <C-S> <Esc>:Leaderf rg<CR>
-        imap <C-P> <Esc>:Leaderf file<CR>
-        imap <C-F> <Esc>:Leaderf function<CR>
-        imap <C-B> <Esc>:Leaderf buffer<CR>
+        nmap<c-p> :Leaderf file<cr>
+        nmap<c-b> :Leaderf buffer<cr>
+        nmap<c-t> :Leaderf function<cr>
+        nmap<c-f> :Leaderf rg<cr>
+        nmap<c-s-f> :<c-u><c-r>=printf("Leaderf! rg %s", expand("<cword>"))<cr>
+        imap<c-p> <Esc>:Leaderf file<cr>
+        imap<c-b> <Esc>:Leaderf buffer<cr>
+        imap<c-t> <Esc>:Leaderf function<cr>
+        imap<c-f> <Esc>:Leaderf rg<cr>
+        imap<c-s-f> <Esc>:<c-u><c-r>=printf("Leaderf! rg %s", expand("<cword>"))<cr>
         "------------------------------LeaderF---------------------------------------------
 
 		" 最大历史文件保存 2048 个
