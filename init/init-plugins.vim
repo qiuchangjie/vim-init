@@ -15,7 +15,7 @@
 "----------------------------------------------------------------------
 if !exists('g:bundle_group')
 	let g:bundle_group = ['basic', 'enhanced', 'filetypes', 'textobj']
-	let g:bundle_group += ['airline', 'nerdtree', 'ale', 'echodoc', 'coc']
+	let g:bundle_group += ['airline', 'nerdtree', 'devicons', 'ale', 'echodoc', 'coc', 'omnisharp']
 	let g:bundle_group += ['leaderf']
 endif
 
@@ -289,20 +289,33 @@ endif
 if index(g:bundle_group, 'airline') >= 0
 	Plug 'vim-airline/vim-airline'
 	Plug 'vim-airline/vim-airline-themes'
-	let g:airline_left_sep = ''
-	let g:airline_left_alt_sep = ''
-	let g:airline_right_sep = ''
-	let g:airline_right_alt_sep = ''
-	let g:airline_powerline_fonts = 1
-	let g:airline_exclude_preview = 1
-	let g:airline_section_b = '%n'
-	let g:airline_theme='deus'
-	let g:airline#extensions#branch#enabled = 0
-	let g:airline#extensions#syntastic#enabled = 0
-	let g:airline#extensions#fugitiveline#enabled = 0
-	let g:airline#extensions#csv#enabled = 0
-	let g:airline#extensions#vimagit#enabled = 0
+	"  let g:airline_left_sep = ''
+	"  let g:airline_left_alt_sep = ''
+	"  let g:airline_right_sep = ''
+	"  let g:airline_right_alt_sep = ''
+	"  let g:airline_powerline_fonts = 1
+	"  let g:airline_exclude_preview = 1
+	"  let g:airline_section_b = '%n'
+	"  let g:airline_theme='deus'
+	"  let g:airline#extensions#branch#enabled = 0
+	"  let g:airline#extensions#syntastic#enabled = 0
+	"  let g:airline#extensions#fugitiveline#enabled = 0
+	"  let g:airline#extensions#csv#enabled = 0
+	"  let g:airline#extensions#vimagit#enabled = 0
+    "  let g:airline#extensions#tabline#enabled = 1
+    
+    "----------airline------------
     let g:airline#extensions#tabline#enabled = 1
+    let g:airline#extensions#tabline#left_sep = ''
+    let g:airline#extensions#tabline#left_alt_sep = ''
+    let g:airline#extensions#tabline#formatter = 'unique_tail'
+    let g:airline#extensions#tabline#buffer_nr_show = 1        "显示buffer编号
+    let g:airline#extensions#tabline#buffer_nr_format = '%s:'
+    let g:airline#extensions#battery#enabled = 1
+    let g:airline_left_sep = ''
+    let g:airline_left_alt_sep = ''
+    let g:airline_powerline_fonts = 1
+    "  let g:airline_theme='onedark'       " 需要安装joshdick/onedark.vim主题插件
 endif
 
 
@@ -321,6 +334,12 @@ if index(g:bundle_group, 'nerdtree') >= 0
 	noremap <space>nt :NERDTreeToggle<cr>
 endif
 
+"----------------------------------------------------------------------
+" devicons
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'devicons') >= 0
+    Plug 'ryanoasis/vim-devicons'
+endif
 
 "----------------------------------------------------------------------
 " LanguageTool 语法检查
@@ -413,6 +432,10 @@ if index(g:bundle_group, 'echodoc') >= 0
 	Plug 'Shougo/echodoc.vim'
 	set noshowmode
 	let g:echodoc#enable_at_startup = 1
+endif
+
+if index(g:bundle_group, 'omnisharp') >=0 
+    Plug 'omnisharp/omnisharp-vim'
 endif
 
 if index(g:bundle_group, 'coc') >= 0
