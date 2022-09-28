@@ -302,7 +302,8 @@ set guitabtooltip=%{Vim_NeatGuiTabTip()}
 "语言设置
 set helplang=cn
 
-set guifont=Hack_Nerd_Font_Mono:h12
+set guifont=Hack_Nerd_Font_Mono:h14
+"set guifont=Menlo:h14
 
 colorscheme doom-one
 
