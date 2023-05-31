@@ -175,10 +175,17 @@ if index(g:bundle_group, 'enhanced') >= 0
 
     " 快速进行对齐/格式化
     Plug 'junegunn/vim-easy-align'
+
+    " 代码片段
+    Plug 'SirVer/ultisnips'
+    Plug 'qiuchangjie/vim-snippets'
 	
 	" ALT_+/- 用于按分隔符扩大缩小 v 选区
 	map <m-=> <Plug>(expand_region_expand)
 	map <m--> <Plug>(expand_region_shrink)
+
+    " 代码片段配置
+    let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 endif
 
 
