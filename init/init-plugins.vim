@@ -122,6 +122,9 @@ if index(g:bundle_group, 'basic') >= 0
 	" Git 支持
 	Plug 'tpope/vim-fugitive'
 
+    " 工程管理
+    Plug 'leafOfTree/vim-project'
+
 	" 使用 ALT+E 来选择窗口
 	nmap <m-e> <Plug>(choosewin)
 
@@ -676,10 +679,13 @@ if index(g:bundle_group, 'leaderf') >= 0
         let g:Lf_PreviewInPopup = 1
         let g:Lf_PreviewHorizontalPosition = 'right'
         let g:Lf_UseCache = 0
+        " 模糊匹配忽略扩展名
         let g:Lf_WildIgnore = {
                 \ 'dir': ['.svn','.git','.hg','Temp'],
-                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj']
+                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj', '*UnityLockfile*', '*.prefab', '*.unity', '*.asset', '*.unitypackage']
                 \}
+        " MRU 文件忽略扩展名
+		let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll', '*.meta','*.sln*','*.csproj', '*UnityLockfile*', '*.prefab', '*.unity', '*.asset', '*.unitypackage']
         nmap<c-p> :Leaderf file<cr>
         nmap<c-b> :Leaderf buffer<cr>
         nmap<c-t> :Leaderf function<cr>
@@ -710,14 +716,6 @@ if index(g:bundle_group, 'leaderf') >= 0
 		" 隐藏帮助
 		let g:Lf_HideHelp = 1
 
-		" 模糊匹配忽略扩展名
-		let g:Lf_WildIgnore = {
-					\ 'dir': ['.svn','.git','.hg','.cache','Temp'],
-					\ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj']
-					\ }
-
-		" MRU 文件忽略扩展名
-		let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll', '*.meta','*.sln*','*.csproj']
 		let g:Lf_StlColorscheme = 'powerline'
 
 		" 禁用 function/buftag 的预览功能，可以手动用 p 预览
