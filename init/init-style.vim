@@ -302,10 +302,13 @@ set guitabtooltip=%{Vim_NeatGuiTabTip()}
 "语言设置
 set helplang=cn
 
-set guifont=Hack_Nerd_Font_Mono:h14
+set guifont=Hack_Nerd_Font_Mono:h13
 "set guifont=Menlo:h14
 
+" colorscheme space-vim-dark
 colorscheme doom-one
+" colorscheme gruvbox
+set termguicolors
 
 set cursorline              " 突出显示当前行
 set cul "高亮光标所在行

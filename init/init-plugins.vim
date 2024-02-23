@@ -15,7 +15,8 @@
 "----------------------------------------------------------------------
 if !exists('g:bundle_group')
 	let g:bundle_group = ['basic', 'enhanced', 'filetypes', 'textobj']
-	let g:bundle_group += ['airline', 'nerdtree', 'devicons', 'ale', 'echodoc', 'coc', 'omnisharp']
+	" let g:bundle_group += ['airline', 'nerdtree', 'devicons', 'ale', 'echodoc', 'coc', 'omnisharp']
+    let g:bundle_group += ['airline', 'fern', 'devicons', 'ale', 'echodoc', 'coc', 'omnisharp']
 	let g:bundle_group += ['leaderf']
 endif
 
@@ -36,7 +37,6 @@ endfunc
 "----------------------------------------------------------------------
 call plug#begin(get(g:, 'bundle_home', '~/.vim/bundles'))
 
-
 "----------------------------------------------------------------------
 " 默认插件 
 "----------------------------------------------------------------------
@@ -44,47 +44,18 @@ call plug#begin(get(g:, 'bundle_home', '~/.vim/bundles'))
 " 全文快速移动，<leader><leader>f{char} 即可触发
 Plug 'easymotion/vim-easymotion'
 
-" 文件浏览器，代替 netrw
-Plug 'justinmk/vim-dirvish'
-
 " 表格对齐，使用命令 Tabularize
 Plug 'godlygeek/tabular', { 'on': 'Tabularize' }
 
 " Diff 增强，支持 histogram / patience 等更科学的 diff 算法
 Plug 'chrisbra/vim-diff-enhanced'
 
-
-"----------------------------------------------------------------------
-" Dirvish 设置：自动排序并隐藏文件，同时定位到相关文件
-" 这个排序函数可以将目录排在前面，文件排在后面，并且按照字母顺序排序
-" 比默认的纯按照字母排序更友好点。
-"----------------------------------------------------------------------
-function! s:setup_dirvish()
-	if &buftype != 'nofile' && &filetype != 'dirvish'
-		return
-	endif
-	if has('nvim')
-		return
-	endif
-	" 取得光标所在行的文本（当前选中的文件名）
-	let text = getline('.')
-	if ! get(g:, 'dirvish_hide_visible', 0)
-		exec 'silent keeppatterns g@\v[\/]\.[^\/]+[\/]?$@d _'
-	endif
-	" 排序文件名
-	exec 'sort ,^.*[\/],'
-	let name = '^' . escape(text, '.*[]~\') . '[/*|@=|\\*]\=\%($\|\s\+\)'
-	" 定位到之前光标处的文件
-	call search(name, 'wc')
-	noremap <silent><buffer> ~ :Dirvish ~<cr>
-	noremap <buffer> % :e %
-endfunc
-
-augroup MyPluginSetup
-	autocmd!
-	autocmd FileType dirvish call s:setup_dirvish()
-augroup END
-
+" Vim-which-key 是 emacs-which-key 的 vim 插件，它在弹出窗口中显示可用的快捷键
+Plug 'liuchengxu/vim-which-key', { 'on': ['WhichKey', 'WhichKey!'] }
+let g:mapleader = "\<Space>"
+let g:maplocalleader = ","
+nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
+nnoremap <silent> <localleader> :WhichKey ','<CR>
 
 "----------------------------------------------------------------------
 " 基础插件
@@ -94,11 +65,15 @@ if index(g:bundle_group, 'basic') >= 0
 	" 展示开始画面，显示最近编辑过的文件
 	Plug 'mhinz/vim-startify'
 
-	" 一次性安装一大堆 colorscheme
+	" 主题包，一次性安装一大堆 colorscheme
 	Plug 'flazz/vim-colorschemes'
-    
+
     " doom-one主题
     Plug 'romgrk/doom-one.vim'
+    " gruvbox主题
+    Plug 'morhetz/gruvbox'
+    " space-vim 主题
+    Plug 'liuchengxu/space-vim-dark'
 
 	" 支持库，给其他插件用的函数库
 	Plug 'xolox/vim-misc'
@@ -116,14 +91,14 @@ if index(g:bundle_group, 'basic') >= 0
 	" 使用 ALT+e 会在不同窗口/标签上显示 A/B/C 等编号，然后字母直接跳转
 	Plug 't9md/vim-choosewin'
 
-	" 提供基于 TAGS 的定义预览，函数参数预览，quickfix 预览
-	Plug 'skywind3000/vim-preview'
-
 	" Git 支持
 	Plug 'tpope/vim-fugitive'
 
     " 工程管理
     Plug 'leafOfTree/vim-project'
+
+    " 快捷键提示
+    Plug 'sunaku/vim-shortcut'
 
 	" 使用 ALT+E 来选择窗口
 	nmap <m-e> <Plug>(choosewin)
@@ -147,6 +122,9 @@ if index(g:bundle_group, 'basic') >= 0
 	let g:signify_vcs_cmds = {
 			\ 'git': 'git diff --no-color --diff-algorithm=histogram --no-ext-diff -U0 -- %f',
 			\}
+
+    "注释插件
+    Plug 'preservim/nerdcommenter'
 endif
 
 
@@ -158,8 +136,12 @@ if index(g:bundle_group, 'enhanced') >= 0
 	" 用 v 选中一个区域后，ALT_+/- 按分隔符扩大/缩小选区
 	Plug 'terryma/vim-expand-region'
 
-	" 快速文件搜索
-	Plug 'junegunn/fzf'
+    " Autocompletion
+    Plug 'prabirshrestha/asyncomplete.vim'
+    " Asyncomplete: {{{
+    let g:asyncomplete_auto_popup = 1
+    let g:asyncomplete_auto_completeopt = 0
+    " }}}
 
 	" 给不同语言提供字典补全，插入模式下 c-x c-k 触发
 	Plug 'asins/vim-dict'
@@ -190,55 +172,6 @@ if index(g:bundle_group, 'enhanced') >= 0
     " 代码片段配置
     let g:UltiSnipsSnippetDirectories=["UltiSnips"]
 endif
-
-
-"----------------------------------------------------------------------
-" 自动生成 ctags/gtags，并提供自动索引功能
-" 不在 git/svn 内的项目，需要在项目根目录 touch 一个空的 .root 文件
-" 详细用法见：https://zhuanlan.zhihu.com/p/36279445
-"----------------------------------------------------------------------
-if index(g:bundle_group, 'tags') >= 0
-
-	" 提供 ctags/gtags 后台数据库自动更新功能
-	Plug 'skywind3000/vim-gutentags'
-
-	" 提供 GscopeFind 命令并自动处理好 gtags 数据库切换
-	" 支持光标移动到符号名上：<leader>cg 查看定义，<leader>cs 查看引用
-	Plug 'skywind3000/gutentags_plus'
-
-	" 设定项目目录标志：除了 .git/.svn 外，还有 .root 文件
-	let g:gutentags_project_root = ['.root']
-	let g:gutentags_ctags_tagfile = '.tags'
-
-	" 默认生成的数据文件集中到 ~/.cache/tags 避免污染项目目录，好清理
-	let g:gutentags_cache_dir = expand(s:home . '/.cache/tags')
-
-	" 默认禁用自动生成
-	let g:gutentags_modules = [] 
-
-	" 如果有 ctags 可执行就允许动态生成 ctags 文件
-	if executable('ctags')
-		let g:gutentags_modules += ['ctags']
-	endif
-
-	" 如果有 gtags 可执行就允许动态生成 gtags 数据库
-	if executable('gtags') && executable('gtags-cscope')
-		let g:gutentags_modules += ['gtags_cscope']
-	endif
-
-	" 设置 ctags 的参数
-	let g:gutentags_ctags_extra_args = []
-	let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
-	let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
-	let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
-
-	" 使用 universal-ctags 的话需要下面这行，请反注释
-	" let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
-
-	" 禁止 gutentags 自动链接 gtags 数据库
-	let g:gutentags_auto_add_gtags_cscope = 0
-endif
-
 
 "----------------------------------------------------------------------
 " 文本对象：textobj 全家桶
@@ -293,6 +226,28 @@ if index(g:bundle_group, 'filetypes') >= 0
 
 	" vim org-mode 
 	Plug 'jceb/vim-orgmode', { 'for': 'org' }
+
+    "vim 代码文件头
+    Plug 'ahonn/vim-fileheader'
+    let g:fileheader_author = 'ChangJie.Qiu'
+    let g:fileheader_auto_add = 0
+    let g:fileheader_auto_update = 1
+    let g:fileheader_by_git_config = 0
+    let g:fileheader_show_email = 0
+    let g:fileheader_templates_map = {
+        \ 'lua': [
+            \ '@Author            : {{author}}',
+            \ '@Date              : {{created_date}}',
+            \ '@Last Modified by  : {{modifier}}',
+            \ '@Last Modified time: {{modified_date}}',
+            \ ],
+        \ 'cs': [
+            \ '@Author            : {{author}}',
+            \ '@Date              : {{created_date}}',
+            \ '@Last Modified by  : {{modifier}}',
+            \ '@Last Modified time: {{modified_date}}',
+            \ ]
+        \ }
 endif
 
 
@@ -324,7 +279,9 @@ if index(g:bundle_group, 'airline') >= 0
     let g:airline#extensions#tabline#formatter = 'unique_tail'
     let g:airline#extensions#tabline#buffer_nr_show = 1        "显示buffer编号
     let g:airline#extensions#tabline#buffer_nr_format = '%s:'
+    " let g:airline#extensions#tabline#buffer_idx_mode = 1
     let g:airline#extensions#battery#enabled = 1
+
     let g:airline_left_sep = ''
     let g:airline_left_alt_sep = ''
     let g:airline_powerline_fonts = 1
@@ -345,6 +302,19 @@ if index(g:bundle_group, 'nerdtree') >= 0
 	noremap <space>no :NERDTreeFocus<cr>
 	noremap <space>nm :NERDTreeMirror<cr>
 	noremap <space>nt :NERDTreeToggle<cr>
+    noremap <space>nf :NERDTreeFind<cr>
+endif
+
+"----------------------------------------------------------------------
+" fern 文件树查看器（替代NERDTree）
+"----------------------------------------------------------------------
+if index(g:bundle_group, 'fern') >= 0
+	Plug 'lambdalisue/fern.vim'
+    " 自定义命令
+    " 根目录打开文件查看器
+    command FernDrawer execute ":Fern . -drawer"
+    " 打开文件查看器并定位到当前文件
+    command FernDrawerReveal execute ":Fern . -drawer -reveal=%"
 endif
 
 "----------------------------------------------------------------------
@@ -375,7 +345,7 @@ endif
 " ale：动态语法检查
 "----------------------------------------------------------------------
 if index(g:bundle_group, 'ale') >= 0
-	Plug 'w0rp/ale'
+	Plug 'dense-analysis/ale'
 
 	" 设定延迟和提示信息
 	let g:ale_completion_delay = 500
@@ -400,6 +370,7 @@ if index(g:bundle_group, 'ale') >= 0
 	let g:ale_linters = {
 				\ 'c': ['gcc', 'cppcheck'], 
 				\ 'cpp': ['gcc', 'cppcheck'], 
+				\ 'cs': ['OmniSharp'],
 				\ 'python': ['flake8', 'pylint'], 
 				\ 'lua': ['luac'], 
 				\ 'go': ['go build', 'gofmt'],
@@ -449,6 +420,37 @@ endif
 
 if index(g:bundle_group, 'omnisharp') >=0 
     Plug 'omnisharp/omnisharp-vim'
+    " OmniSharp: {{{
+    let g:OmniSharp_popup_position = 'peek'
+    if has('nvim')
+      let g:OmniSharp_popup_options = {
+      \ 'winblend': 30,
+      \ 'winhl': 'Normal:Normal,FloatBorder:ModeMsg',
+      \ 'border': 'rounded'
+      \}
+    else
+      let g:OmniSharp_popup_options = {
+      \ 'highlight': 'Normal',
+      \ 'padding': [0],
+      \ 'border': [1],
+      \ 'borderchars': ['─', '│', '─', '│', '╭', '╮', '╯', '╰'],
+      \ 'borderhighlight': ['ModeMsg']
+      \}
+    endif
+    let g:OmniSharp_popup_mappings = {
+    \ 'sigNext': '<C-n>',
+    \ 'sigPrev': '<C-p>',
+    \ 'pageDown': ['<C-f>', '<PageDown>'],
+    \ 'pageUp': ['<C-b>', '<PageUp>']
+    \}
+
+    " need Plug 'sirver/ultisnips'
+    " let g:OmniSharp_want_snippet = 1
+
+    let g:OmniSharp_highlight_groups = {
+    \ 'ExcludedCode': 'NonText'
+    \}
+    " }}}
 endif
 
 if index(g:bundle_group, 'coc') >= 0
@@ -458,10 +460,9 @@ if index(g:bundle_group, 'coc') >= 0
                 \'coc-html',
                 \'coc-eslint',
                 \'coc-snippets',
-                \'coc-emmet',
                 \'coc-clangd',
+                \'coc-codegeex',
                 \'coc-java',
-                \'coc-lua',
                 \'coc-pairs',
                 \'coc-json',
                 \'coc-lists',
@@ -479,9 +480,9 @@ if index(g:bundle_group, 'coc') >= 0
                 \'coc-vimlsp',
                 \'coc-tabnine',
                 \'coc-emoji',
-                \'coc-marketplace'
+                \'coc-marketplace',
+                \'coc-sumneko-lua',
                 \]
-
     "------------------------------coc.nvim---------------------------------------
     filetype on
 
@@ -590,14 +591,14 @@ if index(g:bundle_group, 'coc') >= 0
     omap ac <Plug>(coc-classobj-a)
 
     " Remap <C-f> and <C-b> for scroll float windows/popups.
-    if has('nvim-0.4.0') || has('patch-8.2.0750')
-    nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-    nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-    inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-    inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-    vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-    vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-    endif
+    " if has('nvim-0.4.0') || has('patch-8.2.0750')
+    " nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    " nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    " inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+    " inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+    " vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    " vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    " endif
 
     " Use CTRL-S for selections ranges.
     " Requires 'textDocument/selectionRange' support of language server.
@@ -635,7 +636,6 @@ if index(g:bundle_group, 'coc') >= 0
     nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
     " Resume latest coc list.
     nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
-
     "------------------------------coc.nvim---------------------------------------------
 endif
 
@@ -681,16 +681,28 @@ if index(g:bundle_group, 'leaderf') >= 0
         let g:Lf_UseCache = 0
         " 模糊匹配忽略扩展名
         let g:Lf_WildIgnore = {
-                \ 'dir': ['.svn','.git','.hg','Temp'],
-                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta','*.sln*','*.csproj', '*UnityLockfile*', '*.prefab', '*.unity', '*.asset', '*.unitypackage']
+                \ 'dir': ['.svn','.git','.hg','Temp', 'obj', 'Library'],
+                \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]','*.meta',
+                    \ '*.sln*','*.csproj', 'UnityLockfile', '*.prefab', '*.unity', '*.asset', 
+                    \ '*.unitypackage', '*.anim', '*.tif', '*.bin', '*.png', '*.mat', '*.fbx', 
+                    \ '*.tga', '*.tiff', '*.dds', '*.ico', '*.jpeg', '*.jpg', '*.shader', 
+                    \ '*.controller', '*.signal', '*.mp3', '*.asmdef', '*.cache', '*.spriteatlas',
+                    \ '*.fontsettings', '*.renderTexture', '*.bank', '*.xsd', '*.plist', '*.playable']
                 \}
         " MRU 文件忽略扩展名
-		let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', '*.dll', '*.meta','*.sln*','*.csproj', '*UnityLockfile*', '*.prefab', '*.unity', '*.asset', '*.unitypackage']
-        nmap<c-p> :Leaderf file<cr>
-        nmap<c-b> :Leaderf buffer<cr>
-        nmap<c-t> :Leaderf function<cr>
-        nmap<c-f> :Leaderf rg<cr>
+		let g:Lf_MruFileExclude = ['*.so', '*.exe', '*.py[co]', '*.sw?', '~$*', '*.bak', '*.tmp', 
+            \ '*.dll', '*.meta','*.sln*','*.csproj', 'UnityLockfile', '*.prefab', '*.unity', '*.asset', 
+            \ '*.unitypackage', '*.anim', '*.tif', '*.bin', '*.png', '*.mat', '*.fbx', '*.tga', '*.tiff', 
+            \ '*.dds', '*.ico', '*.jpeg', '*.jpg', '*.shader', '*.controller', '*.signal', '*.mp3', '*.asmdef', '*.cache', 
+            \ '*.spriteatlas', '*.fontsettings', '*.renderTexture', '*.bank', '*.xsd', '*.plist', '*.playable']
+        nmap<c-p> :LeaderfFile<cr>
+        nmap<c-s-p> :LeaderfRgInteractive<cr>
+        nmap<c-b> :LeaderfBuffer<cr>
+        nmap<c-t> :LeaderfFunction<cr>
+        nmap<c-s-t> :LeaderfFunctionAll<cr>
+        nmap<c-f> :LeaderfLine<cr>
         nmap<c-s-f> :<c-u><c-r>=printf("Leaderf! rg %s", expand("<cword>"))<cr>
+
         "  imap<c-p> <Esc>:Leaderf file<cr>
         "  imap<c-b> <Esc>:Leaderf buffer<cr>
         "  imap<c-t> <Esc>:Leaderf function<cr>
@@ -700,6 +712,9 @@ if index(g:bundle_group, 'leaderf') >= 0
 
 		" 最大历史文件保存 2048 个
 		let g:Lf_MruMaxFiles = 2048
+
+        " 这个选项可以是'rg', 'pt', 'ag', 'find'之一
+        let g:Lf_DefaultExternalTool='rg'
 
 		" ui 定制
 		let g:Lf_StlSeparator = { 'left': '', 'right': '', 'font': '' }
@@ -766,7 +781,6 @@ if index(g:bundle_group, 'leaderf') >= 0
 	endif
 endif
 
-
 "----------------------------------------------------------------------
 " 结束插件安装
 "----------------------------------------------------------------------
@@ -774,6 +788,7 @@ call plug#end()
 
 "代码补全
 set completeopt=longest,menu,menuone,noselect
+set completepopup=highlight:Pmenu,border:off
 
 
 "  "----------------------------------------------------------------------

@@ -12,6 +12,14 @@
 " Created by skywind on 2018/05/30
 " Last Modified: 2018/05/30 17:59:31
 "
+" map nmap vmap nnoremap inoremap 区别
+" vmap：在可视模式下创建键盘映射。例如，vmap <F2> y 在可视模式下将 F2 键映射为复制命令。
+" nmap：在普通模式下创建键盘映射。例如，nmap <F2> :w<CR> 在普通模式下将 F2 键映射为保存文件的命令。
+" map：在普通、可视和操作符等待模式下创建键盘映射。例如，map <F2> :w<CR> 在这些模式下将 F2 键映射为保存文件的命令。
+" nnoremap：在普通模式下创建非递归键盘映射。非递归映射意味着映射的右侧的命令不会再触发其他映射，从而避免了可能的循环。
+"           例如，nnoremap j gj 将 j 键映射为 gj 命令，即使 gj 也被映射到其他命令，j 键仍然只会执行 gj 命令。
+" inoremap：在插入模式下创建非递归键盘映射。例如，inoremap jj <Esc> 将 jj 映射为 Esc 命令，
+"           这意味着你可以通过输入 jj 来退出插入模式，而不需要按 Esc 键。
 "======================================================================
 " vim: set ts=4 sw=4 tw=78 noet :
 
@@ -49,8 +57,8 @@ cnoremap <c-k> <up>
 cnoremap <c-l> <right>
 cnoremap <c-a> <home>
 cnoremap <c-e> <end>
-cnoremap <c-f> <c-d>
-cnoremap <c-b> <left>
+" cnoremap <c-f> <c-d>
+" cnoremap <c-b> <left>
 cnoremap <c-d> <del>
 cnoremap <c-_> <c-k>
 

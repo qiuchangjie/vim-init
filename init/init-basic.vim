@@ -146,7 +146,6 @@ if has('folding')
 	set foldlevel=99
 endif
 
-
 "----------------------------------------------------------------------
 " 文件搜索和补全时忽略下面扩展名
 "----------------------------------------------------------------------
@@ -168,6 +167,6 @@ set wildignore+=*.ppt,*.pptx,*.docx,*.xlt,*.xls,*.xlsx,*.odt,*.wps
 set wildignore+=*.msi,*.crx,*.deb,*.vfd,*.apk,*.ipa,*.bin,*.msu
 set wildignore+=*.gba,*.sfc,*.078,*.nds,*.smd,*.smc
 set wildignore+=*.linux2,*.win32,*.darwin,*.freebsd,*.linux,*.android
-set wildignore+=*UnityLockfile*,*.prefab,*.unity,*.unity3d,*.unitypackage,*.asset " Unity
+set wildignore+=*UnityLockfile*,*.prefab,*.unity,*.unity3d,*.unitypackage,*.asset,*.anim,*.tif " Unity
 
 

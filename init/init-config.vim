@@ -159,8 +159,10 @@ augroup InitFileTypesGroup
 	" 清除同组的历史 autocommand
 	au!
 
-	" C/C++ 文件使用 // 作为注释
-	au FileType c,cpp setlocal commentstring=//\ %s
+	" C/C++/C# 文件使用 // 作为注释
+	au FileType c,cpp,cs setlocal commentstring=//\ %s
+
+    au FileType lua setlocal commentstring=--\ %s
 
 	" markdown 允许自动换行
 	au FileType markdown setlocal wrap
@@ -186,4 +188,17 @@ augroup InitFileTypesGroup
 
 augroup END
 
-
+function! BufferCloseOthers() 
+    let l:currentBufNum = bufnr("%") 
+    let l:alternateBufNum = bufnr("#") 
+    for i in range(1,bufnr("$")) 
+        if buflisted(i) 
+            if i!=l:currentBufNum 
+                execute("bdelete ".i) 
+            endif 
+        endif 
+    endfor 
+endfunction
+" 定义关闭其它buffer的命令:Bdothers :Bdo
+command Bdothers call BufferCloseOthers()
+command Bdo call BufferCloseOthers()
